@@ -15,12 +15,14 @@ RUN apt-get update && apt-get install -y \
     protobuf-compiler \
     wget \
     ninja-build \
+    software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt
-RUN wget https://developer.nvidia.com/compute/machine-learning/tensorrt/secure/8.6.1/local_repo/nv-tensorrt-local-repo-ubuntu2204-8.6.1-cuda-11.8_1.0-1_amd64.deb && \
-    dpkg -i nv-tensorrt-local-repo-ubuntu2204-8.6.1-cuda-11.8_1.0-1_amd64.deb && \
-    cp /var/nv-tensorrt-local-repo-ubuntu2204-8.6.1-cuda-11.8/nv-tensorrt-local-*-keyring.gpg /usr/share/keyrings/ && \
+# Install TensorRT via apt
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:graphics-drivers && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/7fa2af80.pub && \
     apt-get update && \
     apt-get install -y tensorrt
 
@@ -29,16 +31,16 @@ RUN git clone https://github.com/NVIDIA-AI-IOT/CUDA-PointPillars.git && \
     cd CUDA-PointPillars && \
     mkdir build && cd build && \
     cmake -DCMAKE_BUILD_TYPE=Release \
-          -DTENSORRT_ROOT=/usr/local/tensorrt \
           -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
           .. && \
     make -j$(nproc)
 
 ENV PATH="/usr/local/cuda/bin:${PATH}"
-ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/local/tensorrt/lib:${LD_LIBRARY_PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda/lib64:/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}"
 
 FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04
 COPY --from=builder /opt/CUDA-PointPillars/build /opt/pointpillars
-COPY --from=builder /usr/local/tensorrt /usr/local/tensorrt
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnvinfer* /usr/lib/x86_64-linux-gnu/
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libcudnn* /usr/lib/x86_64-linux-gnu/
 
 WORKDIR /workspace
