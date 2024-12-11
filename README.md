@@ -3,7 +3,7 @@
 Real-time LiDAR point cloud detection system using NVIDIA's CUDA-PointPillars, optimized for autonomous vehicle applications.
 
 ## System Requirements
-
+- Ubuntu (20 and higher, other distros likely supported, just check nvidia's support matrix for container toolkit requirements)
 - NVIDIA GPU with compute capability 5.2 or higher (Tesla M60 or RTX A5000 supported...[email me if you need something else supported](mailto:ahern669@ucr.edu))
 - NVIDIA Container Toolkit
 - Docker and Docker Compose
