@@ -29,6 +29,8 @@ Built on NVIDIA's CUDA-PointPillars with the following optimizations:
 
 ## Setup
 
+0. Either use the script in "Fresh install scripts" or install manually from below (still check the script for the list of requirements, as it can change and installdeps.sh has the latest list)
+
 1. Install NVIDIA Container Toolkit (this can get tricky sometimes):
    ```bash
    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
@@ -71,14 +73,14 @@ Built on NVIDIA's CUDA-PointPillars with the following optimizations:
 
 The project uses a multi-stage build process:
 - Base image: `nvcr.io/nvidia/tensorrt:24.03-py3`
-    - the `py3-igpu` version is for jetsons and includes a lot of unnecessary bs for the AUTERA
+    - the `py3-igpu` version is for jetsons and includes a lot of unnecessary BS for the AUTERA
 - Development dependencies included in builder stage (I should probably point it to my fork... I'll do that later)
 - Runtime image optimized for deployment
 - Automatic GPU detection and utilization
 - Shared volume mounting for data processing
 
 ## Data Management
-
+- (optionally, we can route pcaps to udp outside of the container and then use shell scripts to eat/process the udp packets within the container)
 - Place input data in the `./data` directory
 - Data directory is mounted to `/workspace/data` in the container
 - Data directory is git-ignored to prevent large files in the repo
