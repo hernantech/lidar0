@@ -1,10 +1,14 @@
 version: '3.8'
 services:
   pointpillars:
-    build: .
+    build: 
+      context: .
+      network: host
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
+      - LIDAR_SOURCE=${LIDAR_SOURCE:-} # Default empty
+    command: /opt/pointpillars/process_lidar ${LIDAR_SOURCE}
     volumes:
       - ./data:/workspace/data
     deploy:

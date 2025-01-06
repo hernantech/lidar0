@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     protobuf-compiler \
     wget \
     ninja-build \
+    libpcap-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up the build directory
@@ -66,6 +67,11 @@ COPY --from=builder /opt/CUDA-PointPillars/build /opt/pointpillars
 
 # Set up the working directory for user applications
 WORKDIR /workspace
+
+# Create script to handle different input sources
+COPY process_lidar.sh /opt/pointpillars/
+RUN chmod +x /opt/pointpillars/process_lidar.sh
+
 
 # Add runtime library path to ensure libraries can be found
 ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH}
